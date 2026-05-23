@@ -1,0 +1,48 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.example</groupId>
+  <artifactId>openEHROMOPVocab</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <name>openEHROMOPVocab</name>
+
+  <properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    <!-- Archie: parser/model openEHR (Nedap) -->
+    <dependency>
+      <groupId>com.nedap.healthcare.archie</groupId>
+      <artifactId>archie-all</artifactId>
+      <version>3.7.0</version>
+    </dependency>
+    <!-- SnakeYAML for OMOCL parsing -->
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>2.3</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- Para ejecutar la clase principal con mvn exec:java -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <mainClass>es.veratech.AdlToOmopConcepts</mainClass>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
