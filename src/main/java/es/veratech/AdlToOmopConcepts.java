@@ -35,7 +35,7 @@ public class AdlToOmopConcepts {
 
     private static final long START_ID = 2_000_000_001L;
 
-    private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("yyyyMMdd");
+    private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ISO_DATE;
 
     public static void main(String[] args) throws Exception {
         if (args.length < 4) {

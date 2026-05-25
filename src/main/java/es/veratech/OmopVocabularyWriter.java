@@ -33,9 +33,9 @@ public class OmopVocabularyWriter {
             w.newLine();
             for (var r : rows) {
                 w.write(r.conceptId + SEP + csvEscape(r.conceptName) + SEP + r.domainId + SEP
-                        + r.vocabularyId + SEP + r.conceptClassId + SEP + r.standardConcept + SEP
-                        + r.conceptCode + SEP + r.validStartDate + SEP + r.validEndDate + SEP
-                        + nvl(r.invalidReason));
+                    + r.vocabularyId + SEP + r.conceptClassId + SEP + r.standardConcept + SEP
+                    + r.conceptCode + SEP + nvl(normalizeDate(r.validStartDate)) + SEP + nvl(normalizeDate(r.validEndDate)) + SEP
+                    + nvl(r.invalidReason));
                 w.newLine();
             }
         }
@@ -114,9 +114,9 @@ public class OmopVocabularyWriter {
             for (var r : rows) {
                 w.write(String.format(
                     "INSERT INTO CONCEPT_RELATIONSHIP (concept_id_1, concept_id_2, relationship_id, valid_start_date, valid_end_date, invalid_reason) " +
-                    "VALUES (%d, %d, '%s', '%s', '%s', %s);",
+                    "VALUES (%d, %d, '%s', %s, %s, %s);",
                     r.conceptId1, r.conceptId2, r.relationshipId,
-                    r.validStartDate, r.validEndDate, sqlNull(r.invalidReason)));
+                    sqlNull(normalizeDate(r.validStartDate)), sqlNull(normalizeDate(r.validEndDate)), sqlNull(r.invalidReason)));
                 w.newLine();
             }
         }
@@ -130,7 +130,7 @@ public class OmopVocabularyWriter {
             w.newLine();
             for (var r : rows) {
                 w.write(r.conceptId1 + SEP + r.conceptId2 + SEP + r.relationshipId + SEP
-                        + r.validStartDate + SEP + r.validEndDate + SEP + nvl(r.invalidReason));
+                        + nvl(normalizeDate(r.validStartDate)) + SEP + nvl(normalizeDate(r.validEndDate)) + SEP + nvl(r.invalidReason));
                 w.newLine();
             }
         }
@@ -170,10 +170,10 @@ public class OmopVocabularyWriter {
     private static String formatConceptInsert(OmopModel.OmopConcept r) {
         return String.format(
             "INSERT INTO CONCEPT (concept_id, concept_name, domain_id, vocabulary_id, concept_class_id, standard_concept, concept_code, valid_start_date, valid_end_date, invalid_reason) " +
-            "VALUES (%d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %s);",
+            "VALUES (%d, '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s);",
             r.conceptId, esc(r.conceptName), r.domainId, r.vocabularyId,
             r.conceptClassId, r.standardConcept, r.conceptCode,
-            r.validStartDate, r.validEndDate, sqlNull(r.invalidReason));
+            sqlNull(normalizeDate(r.validStartDate)), sqlNull(normalizeDate(r.validEndDate)), sqlNull(r.invalidReason));
     }
 
     private static String esc(String s) {
@@ -194,6 +194,17 @@ public class OmopVocabularyWriter {
 
     private static String nvl(String s) {
         return s == null ? "" : s;
+    }
+
+    private static String normalizeDate(String s) {
+        if (s == null) return null;
+        // Already in ISO format (contains '-')
+        if (s.contains("-")) return s;
+        // Accept YYYYMMDD -> convert to YYYY-MM-DD
+        if (s.matches("\\d{8}")) {
+            return s.substring(0,4) + '-' + s.substring(4,6) + '-' + s.substring(6,8);
+        }
+        return s;
     }
 
     private static void ensureDir(Path filePath) throws IOException {
